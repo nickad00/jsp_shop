@@ -10,39 +10,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 <script>
-    function goCartList(){
-        if(${empty cusDto}) {
-            //로그인 하지 않았을때
-            alert("로그인을 하세요");
-            return false;
-        }
-        location.href="/shopping/cartList?customer_id=${cusDto.customer_id}";
-
-    }
-    function goCart(product_number){
-            if(${empty cusDto}) {
-                //로그인 하지 않았을때
-                alert("로그인을 하세요");
-                return false;
-            }
-
-            $.ajax({
-                      url:"/shopping/cartAdd",
-                      type: "post",
-                      data: {"customer_id": "${cusDto.customer_id}", "product_number": product_number},
-                      success: cartAdd,
-                      error : function(request,status,error){ alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error)}
-                   });
-      }
-    function cartAdd(cnt) {
-         if (cnt >0) {
-              console.log(cnt);
-              alert("Added to Cart");
-        }else{
-              console.log(cnt);
-              alert("Not to Cart!");
-           }
-        }
 </script>
 </head>
 <body>
@@ -82,30 +49,30 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                <div class="col text-right"><button type="button" onclick="goCartList()" class="btn btn-sm btn-danger">My Cart List</button></div>
+                <div class="col text-right"><button type="button" class="btn btn-sm btn-danger">주문하기</button></div>
                 </div>
-                <h2> Product List</h2>
+                <h2>Cart List</h2>
                 <table class="table table-bordered table-hover">
                    <thead>
                         <tr>
                             <th>제품번호</th>
                             <th>제품명</th>
-                            <th>재고량</th>
+                            <th>수량</th>
                             <th>가격</th>
-                            <th>제조업체</th>
-                            <th class="text-center">주문</th>
+                            <th>금액</th>
+                            <th class="text-center">취소</th>
                         </tr>
                    </thead>
 
                    <tbody>
-                   <c:forEach var="product" items="${list}">
+                   <c:forEach var="cart" items="${list}">
                     <tr>
-                       <td>${product.product_number}</td>
-                       <td>${product.product_name}</td>
-                       <td>${product.inventory}</td>
-                       <td>${product.price}</td>
-                       <td>${product.manufacturer}</td>
-                       <td class="text-center"><button type="button" onclick="goCart(${product.product_number})" class="btn btn-sm btn-secondary">Add to Cart</button></td>
+                       <td>${cart.product_number}</td>
+                       <td>${cart.product_name}</td>
+                       <td>${cart.quantity}</td>
+                       <td>${cart.price}</td>
+                       <td>${cart.amount}</td>
+                       <td class="text-center"><button type="button" class="btn btn-sm btn-secondary">Cancel</button></td>
                      </tr>
                      </c:forEach>
                    </tbody>

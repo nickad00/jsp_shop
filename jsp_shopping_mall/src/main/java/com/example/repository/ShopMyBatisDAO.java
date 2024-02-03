@@ -1,5 +1,7 @@
 package com.example.repository;
 
+import com.example.entity.CusPro;
+import com.example.entity.CusProProduct;
 import com.example.entity.Customer;
 import com.example.entity.Product;
 import org.apache.ibatis.io.Resources;
@@ -36,5 +38,34 @@ public class ShopMyBatisDAO { // MyBatis API
           session.close();
           return cusDto; // null or Customer
       }
+    public int cartAdd(CusPro dto){
+        SqlSession session = sqlSessionFactory.openSession();
+        CusPro checkDto = session.selectOne("checkAdd", dto);
+        int cnt = 1;
 
+        if(checkDto != null){
+            cnt = session.update("cartUpdate", dto); // 수량을 update 해줌
+        }else {
+            cnt = session.insert("cartAdd", dto);
+        }
+        session.commit();
+        session.close();
+        return cnt;
+    }
+
+
+    public List<CusProProduct> cartList(String customer_id) {
+        SqlSession session = sqlSessionFactory.openSession();
+        // 구매(cusPro) + 제품(Product) = 조인?
+        List<CusProProduct> list = session.selectList("cartList", customer_id);
+        session.close();
+        return list;
+    }
+
+    public int totalAmount(String customer_id){
+          SqlSession session = sqlSessionFactory.openSession();
+          int totalAmount = session.selectOne("totalAmount", customer_id);
+          session.close();
+          return totalAmount;
+    }
 }

@@ -10,6 +10,44 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 <script>
+    function goCancel(order_number, customer_id) {
+        console.log(order_number, customer_id);
+        location.href="/shopping/cancel?order_number="+order_number+"&customer_id="+customer_id;
+    }
+    function goOrder(customer_id){
+        if(${!empty totalAmount}) {
+        alert("주문이 완료되었습니다.");
+        $.ajax({
+            url: "/shopping/empty",
+            type: "get",
+            data: {"customer_id" : customer_id, "totalAmount": ${totalAmount}},
+            success : function(data) {
+
+                alert("장바구니를 비웠습니다.");
+                location.href="/shopping/cartList?customer_id="+customer_id;
+
+            },
+            error: function() { alert("error");}
+        });
+        }else {
+            alert("장비구니에 상품이 없습니다.");
+            return false;
+        }
+    }
+
+    function goQuantity(order_number) {
+        var quantity = $("#quantity"+ order_number).val();
+        //alert(quantity);
+        $.ajax({
+            url: "/shopping/quantity",
+            type: "post",
+            data : {"order_number": order_number, "quantity": quantity},
+            success: function(cnt){
+                location.href="/shopping/cartList?customer_id=${cusDto.customer_id}";
+            },
+            error: function(){alert("error");}
+        });
+    }
 </script>
 </head>
 <body>
@@ -49,7 +87,7 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                <div class="col text-right"><button type="button" class="btn btn-sm btn-danger">주문하기</button></div>
+                <div class="col text-right"><button type="button" onclick="goOrder('${cusDto.customer_id}')" class="btn btn-sm btn-danger">주문하기</button></div>
                 </div>
                 <h2>Cart List</h2>
                 <table class="table table-bordered table-hover">
@@ -69,16 +107,23 @@
                     <tr>
                        <td>${cart.product_number}</td>
                        <td>${cart.product_name}</td>
-                       <td>${cart.quantity}</td>
+                       <td><input type="number"  onchange="goQuantity(${cart.order_number})" name="quantity" id="quantity${cart.order_number}" min="1" max="5" class="form-control" value="${cart.quantity}"/></td>
                        <td>${cart.price}</td>
                        <td>${cart.amount}</td>
-                       <td class="text-center"><button type="button" class="btn btn-sm btn-secondary">Cancel</button></td>
+                       <td class="text-center"><button type="button" onclick="goCancel(${cart.order_number}, '${cusDto.customer_id}')" class="btn btn-sm btn-secondary">Cancel</button></td>
                      </tr>
                      </c:forEach>
+                     <tr>
+                        <td colspan="4">Total Amount</td>
+                        <td colspan="2"><span class="badge badge-danger">${totalAmount}</span></td>
+                     </tr>
                    </tbody>
                 </table>
+                <div class="row">
+                    <div class="col text-right"><button type="button" onclick="location.href='/shopping/list'" class="btn btn-sm btn-primary">Continue Shopping</button></div>
+                </div>
             </div>
-            <div class="card-footer text-center">생각하는 데이터베이스 모델링_박매일</div>
+            <div class="card-footer text-center">shopping mall</div>
         </div>
     </div>
 

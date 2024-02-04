@@ -1,7 +1,7 @@
 package com.example.controller;
 // Servlet의 기본 골격
 
-import com.example.entity.CusProProduct;
+import com.example.entity.CusPro;
 import com.example.repository.ShopMyBatisDAO;
 
 import javax.servlet.RequestDispatcher;
@@ -11,30 +11,28 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
+import java.io.PrintWriter;
 
 // http://localhost:8081/shopping/main -----> /WEB-INF/views/template.jsp
- @WebServlet("/cartList")
-public class CartListController extends HttpServlet {
+ @WebServlet("/quantity")
+ public class CartQuantityController extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        int order_number = Integer.parseInt(req.getParameter("order_number"));
+        int quantity = Integer.parseInt(req.getParameter("quantity"));
 
-        String customer_id = req.getParameter("customer_id");
+        CusPro dto = new CusPro();
+        dto.setOrder_number(order_number);
+        dto.setQuantity(quantity);
+
 
         ShopMyBatisDAO dao = new ShopMyBatisDAO();
-        List<CusProProduct> list =  dao.cartList(customer_id);
-        req.setAttribute("list", list);
-        // total amount 값 구하기
-        if(list.size() != 0) {
-            int totalAmount = dao.totalAmount(customer_id);
-            req.setAttribute("totalAmount", totalAmount);
+        int cnt = dao.updateQuantity(dto);
 
-        }
+        // client --> ajax 요청 --> 응답 --> ajax 응답(success)
+        PrintWriter out = resp.getWriter();
+        out.println(cnt);
 
-        // forward
-        RequestDispatcher rd = req.getRequestDispatcher("/WEB-INF/views/CartList.jsp");
-        rd.forward(req, resp);
+
     }
-
-
 }

@@ -68,4 +68,37 @@ public class ShopMyBatisDAO { // MyBatis API
           session.close();
           return totalAmount;
     }
+
+    public int cartCancel(int order_number){
+        SqlSession session = sqlSessionFactory.openSession();
+        int cnt = session.delete("cartCancel", order_number);
+        session.commit();
+        session.close();
+        return cnt;
+    }
+
+    public int cartEmpty(String customer_id){
+        SqlSession session = sqlSessionFactory.openSession();
+        int cnt = session.delete("cartEmpty", customer_id);
+        session.commit();
+        session.close();
+        return cnt;
+    }
+
+    public int pointSave(Customer cus) {
+        SqlSession session = sqlSessionFactory.openSession();
+        int cnt = session.update("pointSave", cus);
+        session.commit();
+        session.close();
+        return cnt;
+    }
+
+    public int updateQuantity(CusPro dto){
+        SqlSession session = sqlSessionFactory.openSession();
+        int cnt = session.update("updateQuantity", dto);
+        session.commit();
+        session.close();
+        return cnt;
+
+    }
 }
